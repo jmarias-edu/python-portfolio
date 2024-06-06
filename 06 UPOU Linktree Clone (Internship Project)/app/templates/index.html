@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+
+
+{% block main %}
+<div class="links-container">
+
+  <form action="search" id="search-form">
+    <svg style="cursor: pointer;" id="search-button" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5.5 11.1455C5.49956 8.21437 7.56975 5.69108 10.4445 5.11883C13.3193 4.54659 16.198 6.08477 17.32 8.79267C18.4421 11.5006 17.495 14.624 15.058 16.2528C12.621 17.8815 9.37287 17.562 7.3 15.4895C6.14763 14.3376 5.50014 12.775 5.5 11.1455Z" stroke="#cdcdcd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M15.989 15.4905L19.5 19.0015" stroke="#cdcdcd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+    <input type="text" id="search-terms" name="q" placeholder="Search"/>
+    <svg id="search-reset" fill="#cdcdcd" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" stroke="#cdcdcd" transform="rotate(0)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M0 14.545L1.455 16 8 9.455 14.545 16 16 14.545 9.455 8 16 1.455 14.545 0 8 6.545 1.455 0 0 1.455 6.545 8z" fill-rule="evenodd"></path> </g></svg>
+  </form>
+
+  <div id="no-results" style="display: block;">
+    <h1>No Results Found</h1>
+  </div>
+
+  {% for category, links in categories_links.items() %}
+    {% if links|length > 0 %}
+    <script>document.getElementById("no-results").style.display='none';</script>
+    <section id="section-{{ category.title() | replace(' ', '_') }}">
+      <h1 class="section-title">
+        <span>{{ category }}</span>
+        {% if user['user_type'] == 'admin' and category not in ['Bookmarks', 'Featured','Recently Visited', 'Trending', 'Others']%}
+          <button class="category-delete-btn" data-category="{{ category }}">Delete Category</button>
+        {% endif %}
+      </h1>
+      <div class="card-container">
+        {% for link in links %}
+
+          <div class="card {% if category == 'Bookmarks' %}bookmarked perm{% endif %}" data-url="{{ link['url'].replace('https://', '').replace('http://','') }}" data-link-id="{{ link['id'] }}">
+            {% if category != 'Bookmarks' %}
+              <div class="card-img">
+                <img src="{{ url_for('static',filename='images/' + link['image'] if link['image'] != 'None' else 'images/University-of-the-Future-Official-Logo.png') }}" alt="Image cannot be loaded">
+              </div>
+            {% endif %}
+            <div class="content" data-link-id="{{ link['id'] }}">
+              <h3>{{ link['title'] }}</h3>
+              <span><a href="http://{{ link['url'].replace('https://', '').replace('http://','') }}" target="_blank">{{ link['url'].replace('https://', '').replace('http://','') }}</a></span>
+              {% if category != 'Bookmarks' %}
+                <p class="card-desc">{{ link['description'] if link['description'] != 'None' else '' }}</p>
+              {% endif %}
+            </div>
+            {% if category != 'Bookmarks' %}
+            <div class="actions" id="card-actions">
+              <a href="http://{{ link['url'].replace('https://','').replace('http://','') }}" target="_blank" onclick="visitLinkHandler(link_id)">Open&rarr;</a>
+              
+                <button class="copy" onclick="popup('{{link['url']}}')"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z" fill="#fff"></path> <path d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z" fill="#fff"></path> </g></svg></button>
+
+              {% if user['user_type'] == 'admin' %}
+                <button onclick="editBtnHandler({{ link }})"><svg viewBox="0 0 24 24" stroke="#cdcdcd" fill="#cdcdcd" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16.5189 16.5013C16.6939 16.3648 16.8526 16.2061 17.1701 15.8886L21.1275 11.9312C21.2231 11.8356 21.1793 11.6708 21.0515 11.6264C20.5844 11.4644 19.9767 11.1601 19.4083 10.5917C18.8399 10.0233 18.5356 9.41561 18.3736 8.94849C18.3292 8.82066 18.1644 8.77687 18.0688 8.87254L14.1114 12.8299C13.7939 13.1474 13.6352 13.3061 13.4987 13.4811C13.3377 13.6876 13.1996 13.9109 13.087 14.1473C12.9915 14.3476 12.9205 14.5606 12.7786 14.9865L12.5951 15.5368L12.3034 16.4118L12.0299 17.2323C11.9601 17.4419 12.0146 17.6729 12.1708 17.8292C12.3271 17.9854 12.5581 18.0399 12.7677 17.9701L13.5882 17.6966L14.4632 17.4049L15.0135 17.2214L15.0136 17.2214C15.4394 17.0795 15.6524 17.0085 15.8527 16.913C16.0891 16.8004 16.3124 16.6623 16.5189 16.5013Z" fill="#0e6021"></path> <path d="M22.3665 10.6922C23.2112 9.84754 23.2112 8.47812 22.3665 7.63348C21.5219 6.78884 20.1525 6.78884 19.3078 7.63348L19.1806 7.76071C19.0578 7.88348 19.0022 8.05496 19.0329 8.22586C19.0522 8.33336 19.0879 8.49053 19.153 8.67807C19.2831 9.05314 19.5288 9.54549 19.9917 10.0083C20.4545 10.4712 20.9469 10.7169 21.3219 10.847C21.5095 10.9121 21.6666 10.9478 21.7741 10.9671C21.945 10.9978 22.1165 10.9422 22.2393 10.8194L22.3665 10.6922Z" fill="#0e6021"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M4.17157 3.17157C3 4.34315 3 6.22876 3 10V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C20.9812 19.6756 20.9997 17.8316 21 14.1801L18.1817 16.9984C17.9119 17.2683 17.691 17.4894 17.4415 17.6841C17.1491 17.9121 16.8328 18.1076 16.4981 18.2671C16.2124 18.4032 15.9159 18.502 15.5538 18.6225L13.2421 19.3931C12.4935 19.6426 11.6682 19.4478 11.1102 18.8898C10.5523 18.3318 10.3574 17.5065 10.607 16.7579L10.8805 15.9375L11.3556 14.5121L11.3775 14.4463C11.4981 14.0842 11.5968 13.7876 11.7329 13.5019C11.8924 13.1672 12.0879 12.8509 12.316 12.5586C12.5106 12.309 12.7317 12.0881 13.0017 11.8183L17.0081 7.81188L18.12 6.70004L18.2472 6.57282C18.9626 5.85741 19.9003 5.49981 20.838 5.5C20.6867 4.46945 20.3941 3.73727 19.8284 3.17157C18.6569 2 16.7712 2 13 2H11C7.22876 2 5.34315 2 4.17157 3.17157ZM7.25 9C7.25 8.58579 7.58579 8.25 8 8.25H14.5C14.9142 8.25 15.25 8.58579 15.25 9C15.25 9.41421 14.9142 9.75 14.5 9.75H8C7.58579 9.75 7.25 9.41421 7.25 9ZM7.25 13C7.25 12.5858 7.58579 12.25 8 12.25H10.5C10.9142 12.25 11.25 12.5858 11.25 13C11.25 13.4142 10.9142 13.75 10.5 13.75H8C7.58579 13.75 7.25 13.4142 7.25 13ZM7.25 17C7.25 16.5858 7.58579 16.25 8 16.25H9.5C9.91421 16.25 10.25 16.5858 10.25 17C10.25 17.4142 9.91421 17.75 9.5 17.75H8C7.58579 17.75 7.25 17.4142 7.25 17Z" fill="#cdcdcd"></path> </g></svg></button>
+                <button class="delete" data-url="{{ link['url'] }}" data-link-id="{{ link['id'] }}"><svg fill="#cdcdcd" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="delete-alt" class="icon glyph" stroke="#cdcdcd"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M17,4V5H15V4H9V5H7V4A2,2,0,0,1,9,2h6A2,2,0,0,1,17,4Z"></path><path d="M20,6H4A1,1,0,0,0,4,8H5V20a2,2,0,0,0,2,2H17a2,2,0,0,0,2-2V8h1a1,1,0,0,0,0-2ZM11,17a1,1,0,0,1-2,0V11a1,1,0,0,1,2,0Zm4,0a1,1,0,0,1-2,0V11a1,1,0,0,1,2,0Z"></path></g></svg></button>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if user %}
+              <button class="bookmark" data-link-id="{{ link['id'] }}">{% if link['id'] in user['bookmarks'] %}<svg viewBox="-4 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>bookmark</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-419.000000, -153.000000)" fill="#FFAC0D"> <path d="M437,153 L423,153 C420.791,153 419,154.791 419,157 L419,179 C419,181.209 420.791,183 423,183 L430,176 L437,183 C439.209,183 441,181.209 441,179 L441,157 C441,154.791 439.209,153 437,153" id="bookmark" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg>{% else %}<svg viewBox="-4 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#222222"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>bookmark</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-419.000000, -153.000000)" fill="#777"> <path d="M437,153 L423,153 C420.791,153 419,154.791 419,157 L419,179 C419,181.209 420.791,183 423,183 L430,176 L437,183 C439.209,183 441,181.209 441,179 L441,157 C441,154.791 439.209,153 437,153" id="bookmark" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg>{% endif %}</button>
+            {% endif %}
+          </div>
+
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<button id="scroll-to-top" onclick="topFunction()"><svg width="512px" height="512px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 6V18M12 6L7 11M12 6L17 11" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg></button>
+
+<div id="tutorial-container" class="modal container tutorial">
+  <div id="tutorial-box">
+    <div class="form-header">
+        <h1>Website Tutorial</h1>
+        <button id="close-tutorial-btn"><svg viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>cross</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-469.000000, -1041.000000)" fill="#2c2c2c"> <path d="M487.148,1053.48 L492.813,1047.82 C494.376,1046.26 494.376,1043.72 492.813,1042.16 C491.248,1040.59 488.712,1040.59 487.148,1042.16 L481.484,1047.82 L475.82,1042.16 C474.257,1040.59 471.721,1040.59 470.156,1042.16 C468.593,1043.72 468.593,1046.26 470.156,1047.82 L475.82,1053.48 L470.156,1059.15 C468.593,1060.71 468.593,1063.25 470.156,1064.81 C471.721,1066.38 474.257,1066.38 475.82,1064.81 L481.484,1059.15 L487.148,1064.81 C488.712,1066.38 491.248,1066.38 492.813,1064.81 C494.376,1063.25 494.376,1060.71 492.813,1059.15 L487.148,1053.48" id="cross" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg></button>
+    </div>
+    <div id="tutorial-vid-container">
+        <iframe id="tutorial-vid" src="https://www.youtube.com/embed/TT-dPcoTCa0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+
+
+{% if user and user['user_type'] == 'admin' %}
+<div class="modal container" id="add">
+  <form action="/api/v1/link" method="POST" class="modal" id="add-link-form">
+    <input type="text" id="link_id" hidden>
+
+    <div class="form-header">
+      <h1>Add Link</h1>
+      <button id="close-modal-btn"><svg viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>cross</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-469.000000, -1041.000000)" fill="#2c2c2c"> <path d="M487.148,1053.48 L492.813,1047.82 C494.376,1046.26 494.376,1043.72 492.813,1042.16 C491.248,1040.59 488.712,1040.59 487.148,1042.16 L481.484,1047.82 L475.82,1042.16 C474.257,1040.59 471.721,1040.59 470.156,1042.16 C468.593,1043.72 468.593,1046.26 470.156,1047.82 L475.82,1053.48 L470.156,1059.15 C468.593,1060.71 468.593,1063.25 470.156,1064.81 C471.721,1066.38 474.257,1066.38 475.82,1064.81 L481.484,1059.15 L487.148,1064.81 C488.712,1066.38 491.248,1066.38 492.813,1064.81 C494.376,1063.25 494.376,1060.71 492.813,1059.15 L487.148,1053.48" id="cross" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg></button>
+    </div>
+
+    <div class="input-field">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" placeholder="Enter title" required>
+    </div>
+
+    <div class="input-field">
+      <label for="url">URL</label>
+      <input type="text" id="url" name="url" placeholder="Enter url" required> 
+    </div>
+
+    <div class="input-field">
+      <label for="description">Description</label>
+      <textarea name="description" id="description" rows="10"></textarea>
+    </div>
+
+    <div class="input-field">
+      <label for="categories">Category</label>
+      <div id="categories">
+      {% for category in category_list %}
+        {% if category['name'] != 'Others'%}
+          <div>
+            <input type="checkbox" name="category" id="category-{{ category['id'] }}" value="{{ category['id'] }}">
+            <label for="category-{{ category['id'] }}">{{ category['name'] }}</label>
+          </div>
+        {% endif %}
+      {% endfor %}
+        <div>
+          <input type="checkbox" name="category" id="new-category-checkbox" value="new category">
+          <label for="new-category-checkbox">New Category:</label>
+        </div>
+      </div>
+      <input type="text" id="new-category-input" name="new-category-input" class="hidden" placeholder="Enter new categories (comma separated)"/>
+    </div>
+
+    <div class="input-field" id="privacy">
+      <label for="privacy">Privacy Settings</label>
+      {% for privacy in privacy_settings %}
+        {% if privacy['name'] != 'Blacklist' %}
+        <div>
+          <input type="checkbox" name="privacy" id="privacy-{{ privacy['id'] }}" value="{{ privacy['id']}}" {% if privacy['name'] == 'admin' %}checked{% endif %}>        
+          <label for="privacy-{{ privacy['id'] }}">{{ privacy['name'] }}</label>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="input-field">
+      <label for="image">Image:</label>
+      <input type="file" name="image" id="image" accept="image/*">
+    </div>
+
+    <div class="input-field">
+      <input type="submit" value="Submit" >
+    </div>
+  </form>
+</div>
+<button id="open-modal-btn"><svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#cdcdcd"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>plus</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-362.000000, -1037.000000)" fill="#cdcdcd"> <path d="M390,1049 L382,1049 L382,1041 C382,1038.79 380.209,1037 378,1037 C375.791,1037 374,1038.79 374,1041 L374,1049 L366,1049 C363.791,1049 362,1050.79 362,1053 C362,1055.21 363.791,1057 366,1057 L374,1057 L374,1065 C374,1067.21 375.791,1069 378,1069 C380.209,1069 382,1067.21 382,1065 L382,1057 L390,1057 C392.209,1057 394,1055.21 394,1053 C394,1050.79 392.209,1049 390,1049" id="plus" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg></button>
+
+{% endif %}
+{% endblock %}
+
+{% block script %}
+
+<script>
+
+  document.querySelectorAll('.card .actions button').forEach( elem => {
+    elem.addEventListener('click', ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+    })
+  })
+  {% if user and user['user_type'] == 'admin' %}
+
+  document.querySelectorAll('.category-delete-btn').forEach( btn => {
+    btn.addEventListener('click', ev => {
+      ev.preventDefault();
+      let deleteConfimation = confirm(`Are you sure want to delete category, ${ev.currentTarget.getAttribute('data-category')}?`)
+
+      if (deleteConfimation) {
+        fetch(`/api/v1/admin/category/${ev.currentTarget.getAttribute('data-category')}`, {
+          method: 'DELETE'
+        })
+          .then( res => res.json())
+          .then( data => window.location.reload())
+          .catch( err => console.error(err))
+      }
+    })
+  })
+
+
+  document.querySelector('#add-link-form').addEventListener('click', ev => {
+    ev.preventDefault();
+    ev.stopPropagation();
+  })
+
+  document.querySelectorAll('#add-link-form .input-field > *').forEach( elem => {
+    elem.addEventListener('click', ev => {
+      ev.stopPropagation();
+    })
+  })
+
+  document.querySelectorAll('.modal.container').forEach( elem => {
+    elem.addEventListener('click', ev => {
+      ev.preventDefault();
+      document.querySelector('#add.modal.container').style.display = 'none';
+      document.querySelector('#add-link-form').reset();
+      ev.stopPropagation();
+    })
+  })
+
+  document.querySelector('#open-modal-btn').addEventListener('click', ev => {
+    ev.preventDefault();
+    document.querySelector('#add.modal.container').style.display = 'flex';
+    document.querySelector('#add-link-form').reset();
+    ev.stopPropagation();
+  });
+    
+  document.querySelector('#close-modal-btn').addEventListener('click', ev => {
+    ev.preventDefault();
+    document.querySelector('#add.modal.container').style.display = 'none';
+    document.querySelector('#add-link-form').reset();
+    ev.stopPropagation();
+  });
+
+  
+
+  document.querySelector('#new-category-checkbox').addEventListener('change', ev => {
+    ev.preventDefault();
+    let newCategoryInput = document.querySelector('#new-category-input')
+    if (ev.currentTarget.checked) {
+      newCategoryInput.classList.remove('hidden');
+      newCategoryInput.required = true;
+    } else {
+      newCategoryInput.classList.add('hidden');
+      newCategoryInput.required = false;
+      newCategoryInput.value = '';
+    }
+  })
+
+  document.querySelector('#add-link-form').addEventListener('submit', ev => {
+    ev.preventDefault();
+
+    let formData = new FormData();
+    formData.append('url', document.querySelector('#url').value)
+    formData.append('title', document.querySelector('#title').value)
+    formData.append('description', document.querySelector('#description').value)
+    formData.append('image', document.querySelector('#image').files[0])
+
+    let category_list = []
+    document.getElementsByName('category').forEach( elem => {
+      if (elem['checked']) {
+        if (elem.getAttribute('value') == 'new category') {
+          formData.append('new_category', document.querySelector('#new-category-input').value)
+          return
+        }
+        category_list.push(elem.getAttribute('value'))
+      }
+    })
+    formData.append('category', category_list)
+
+
+    let privacy_list = []
+    document.getElementsByName('privacy').forEach( (elem) => {
+      if (elem['checked']) {
+        privacy_list.push(elem.getAttribute('value'))
+      }
+    })
+    formData.append('privacy', privacy_list)
+    
+    fetch('/api/v1/user/' + {{ user['id'] }} + '/edit/link/' + document.querySelector('#link_id').value);
+
+    fetch('/api/v1/link', {
+      method: 'POST',
+      body: formData
+    })
+    .then( res => res.json())
+    .then( data => window.location.reload())
+    .catch( err => console.error(err))
+  });
+
+
+  function editBtnHandler(link) {
+    document.querySelector('#add-link-form').reset();
+    document.querySelector('#link_id').value = link['id']
+    document.querySelector('#url').value = link['url'];
+    document.querySelector('#title').value = link['title'];
+    document.querySelector('#description').value = link['description'];
+    document.getElementsByName('category').forEach( elem => {
+      if([...link['category']].map( category => category['id']).toString().includes(elem.value))
+        elem.checked = true;
+    });
+    document.getElementsByName('privacy').forEach( elem => {
+      if ([...link['privacy']].map( privacy => privacy['id'] ).toString().includes(elem.value))
+        elem.checked = true;
+    });
+    document.querySelector('#add.modal.container').style.display = 'flex';
+  }
+
+  document.querySelectorAll('.delete').forEach( elem => {
+    elem.addEventListener('click', ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (confirm(`Delete ${ev.currentTarget.getAttribute('data-url')} ?`)) {
+        fetch('/api/v1/user/' + {{ user['id'] }} + '/remove/link/' + ev.currentTarget.getAttribute('data-link-id'))
+        fetch('/api/v1/link/' + ev.currentTarget.getAttribute('data-link-id'),
+        { method: 'DELETE' })
+          .then( res => res.json())
+          .then( data => {
+            window.location.reload()
+          })
+          .catch( err => console.error(err))
+      }
+    })
+  })
+
+  {% endif %}
+
+  {% if user %}
+
+  
+  const isBookmarkedSVG = `<svg viewBox="-4 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>bookmark</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-419.000000, -153.000000)" fill="#FFAC0D"> <path d="M437,153 L423,153 C420.791,153 419,154.791 419,157 L419,179 C419,181.209 420.791,183 423,183 L430,176 L437,183 C439.209,183 441,181.209 441,179 L441,157 C441,154.791 439.209,153 437,153" id="bookmark" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg>`
+  const isNotBookmarkedSVG = `<svg viewBox="-4 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>bookmark</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-419.000000, -153.000000)" fill="#777"> <path d="M437,153 L423,153 C420.791,153 419,154.791 419,157 L419,179 C419,181.209 420.791,183 423,183 L430,176 L437,183 C439.209,183 441,181.209 441,179 L441,157 C441,154.791 439.209,153 437,153" id="bookmark" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg>`
+  
+  function visitLinkHandler(link_id) {
+    fetch('/api/v1/user/' + {{ user['id'] }} + '/visit/link/' + link_id)
+      .then( res => res.json())
+      .then( data => {
+        console.log(data)
+      })
+      .catch( err => console.error(err))
+  }
+
+
+  document.querySelectorAll('.bookmark').forEach( elem => {
+    elem.addEventListener('click', ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      defaultSVG = elem.innerHTML
+
+      if (elem.innerHTML == isBookmarkedSVG)
+        elem.innerHTML = isNotBookmarkedSVG
+      else
+        elem.innerHTML = isBookmarkedSVG
+
+      fetch('/api/v1/user/' + {{ user['id'] }} + '/bookmark/link/' + ev.currentTarget.getAttribute('data-link-id'),
+      { method: 'PUT' })
+        .then( res => res.json())
+        .then( data => {
+          console.log(data)
+        })
+        .catch( err => {
+          console.error(err)
+          elem.innerHTML = defaultSVG
+        })
+    })
+  })
+  
+  {% endif %}
+
+  {% if isBlacklisted %}
+    alert('Your account currently has restricted access. Please contact the site administrator for assistance.')
+  {% endif %}
+
+  document.getElementById("search-form").addEventListener("submit", ev=>{
+    ev.preventDefault();
+    window.location.replace("/search?term=".concat(document.getElementById("search-terms").value))
+  })
+
+  document.getElementById("search-button").addEventListener("click", ev=>{
+    ev.preventDefault();
+    window.location.replace("/search?term=".concat(document.getElementById("search-terms").value))
+  })
+
+  document.querySelectorAll('.card').forEach( elem => {
+    elem.style.cursor = 'pointer';
+    elem.addEventListener('click', ev => {
+      ev.preventDefault();
+      window.open('http://' + ev.currentTarget.getAttribute('data-url'), '_blank');
+      {% if user %}
+      fetch('/api/v1/user/' + {{ user['id'] }} + '/visit/link/' + ev.currentTarget.getAttribute('data-link-id'))
+      {% endif %}
+    })
+  })
+
+  // Get the button:
+let scrolltop = document.getElementById("scroll-to-top");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    scrolltop.style.display = "flex";
+  } else {
+    scrolltop.style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+</script>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+
+<script>
+
+  function popup(url) {
+    navigator.clipboard.writeText(url); 
+    setTimeout(function(){alert("Copied to clipboard");}, 10);
+  }
+  
+  var searchcontent = document.getElementById("search-terms");
+  document.getElementById("search-reset").addEventListener('click', (event)=>{
+    event.preventDefault();
+    searchcontent.value = "";
+  })
+
+  document.querySelector('#close-tutorial-btn').addEventListener('click', ev => {
+    ev.preventDefault();
+    document.querySelector('#tutorial-container').style.display = 'none';
+    ev.stopPropagation();
+  });
+
+</script>
+
+{% endblock %}

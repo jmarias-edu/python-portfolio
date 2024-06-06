@@ -1,0 +1,54 @@
+#announcements {
+  display: none;
+}
+
+.announcement-card {
+  background-color: var(--card-bg);
+  color: #2c2c2c;
+
+  padding: 1em;
+  padding-top: 3em;
+
+  position: relative;
+
+  scroll-margin-top: 6em;
+}
+
+.announcement-card > * {
+  display: block;
+  width: 100%;
+  margin: .5em;
+}
+
+.announcement-image {
+  max-width: 50%;
+  margin: auto;
+}
+
+.announcement-image > img {
+  max-width: 100%;
+  margin: auto;
+}
+
+.announcement-actions {
+  height: 3em;
+  width: fit-content;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.announcement-actions svg {
+  height: 2em;
+  width: 2em;
+  margin: .5em;
+
+  cursor: pointer;
+}
+
+@media only screen and (min-width: 768px) {
+  .announcement-card {
+    padding-top: 1em;
+  }
+
+}

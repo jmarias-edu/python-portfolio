@@ -14,3 +14,6 @@ Project in Programming Languages Course, created an interpreter for LOLCode, an 
 
 ## 05 Simulation of SIR Model of Disease Spread with Monte Carlo Method
 Project in Applied Mathematics Course. Python was used to implement the SIR (Susceptible, Infected, Recovered) Model of Disease Spread with Monte Carlo Method of Randomization.
+
+## 06 ONE UPOU (Linktree clone for UPOU) Code
+Project during my Midyear Internship for UP Open University. Created with a fellow intern, uses Python Flask for both the backend and frontend.

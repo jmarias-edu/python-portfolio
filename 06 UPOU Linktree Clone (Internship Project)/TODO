@@ -1,0 +1,75 @@
+[x] Google OAuth
+[x] Categories
+[x] Lagyan ng description yung modal
+[x] Add image
+[x] Grid View
+[x] Delete Link
+[x] Logs
+[x] Search
+[x] Dark / Light Mode Toggle
+[x] Trending 
+[x] Announcements
+[x] Contact Us ( email techsupport@upou.edu.ph )
+[x] Click History
+[x] announcement border
+[x] dark mode toggle (left size header web)
+[x] announcement edit
+[x] announcement delete
+[x] font sizing (too big / categories sidebar)
+[x] scaling link image
+[x] admin removal (ictdo director)
+[x] scaling link image
+[na] session storage
+[x] move announcement ( web: below categories sidebar; mobile: above search bar)
+[x] admin removal (ictdo director)
+[x] google logo mobile signin button
+
+
+<!-- !!! FIX: Enter doesn't submit form modal -->
+
+
+!!!NOTES:
+
+features: 
+dark mode
+user auth
+search
+bookmarks
+history
+logs ( visits, create, and delete )
+
+user profile
+
+ACCESSIBILITY!!!
+font size
+
+admin features:
+CRUD link
+CRUD category
+User Management
+
+Header
+- Logo
+- dark mode toggle
+
+Sidebar
+- Categories
+- 
+
+Footer
+( see other upou sites for reference )
+
+Mobile App
+
+
+faculty
+admin
+
+
+PRIO: INTERANL EMPLOYEES
+
+announcement page
+
+mobile app
+- responsive
+- android mobile wrapper
