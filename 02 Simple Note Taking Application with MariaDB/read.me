@@ -1,0 +1,64 @@
+Hi! Welcome to CARL Notes!
+
+#prerequisites
+
+In order to run this application, you must have the following installed in your system:
+- Mariadb 
+- Python 3
+- and, the Python-Mariadb Connector through pip3
+
+#set-up
+
+After installing the prerequisites, you must then open up mariadb as root and source the setup.sql file before running the python application
+
+#usage
+
+Once all the prerequisites and set-up has been done, you are now ready to run the CARL Note taking app! Simply run the main.py file and you're good to go!
+
+The application is a simple terminal-based interface where you type the number of the function you want to use and input the corresponding data the application will ask for. If there is an error within the inputs, it will simply terminate the transaction and kindly ask to repeat the transaction after returning to the main menu.
+
+#functions
+
+[1] Add New Task
+
+Adds a new task, asks for a task name, details and deadline
+
+[2] Edit Task
+
+Function for editing the attributes of a task, can skip editing attributes by entering an empty string
+
+[3] Delete Task
+
+Deletes a task from the database
+
+[4] View All Tasks
+
+Views all the tasks currently stored in the database
+
+[5] Mark Task as Finished
+
+Changes the status of a chosen task to Finished
+
+[6] Add New Category
+
+Creates a new Category
+
+[7] Edit Category
+
+Function for editing the attributes of a category, can skip editing attributes by entering an empty string
+
+[8] Delete Category
+
+Deletes a category from the database
+
+[9] View Category
+
+Views tasks included in a chosen category
+
+[10] Add a task to a category
+
+Function for adding a task to a category, asks for task then adds to a chosen category
+
+#about
+
+CARL Notes is a python-based note taking app created by Ching, Arias, Reyes, and Lorenzo as a project for the partial completion of CMSC 127 in the 2nd Semester of AY 2021-2022.

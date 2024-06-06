@@ -1,0 +1,63 @@
+HAI : start
+1.2 : numbar_literal
+\n : new_line
+I HAS A : variable_declarator
+x : variable_identifier
+ITZ : variable_declarator_ITZ
+5 : numbr_literal
+\n : new_line
+I HAS A : variable_declarator
+y : variable_identifier
+ITZ : variable_declarator_ITZ
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+x : variable_identifier
+\n : new_line
+VISIBLE : print_statement
+y : variable_identifier
+\n : new_line
+VISIBLE : print_statement
+SUM OF : addition_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+DIFF OF : subtraction_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+PRODUKT OF : multiplication_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+QUOSHUNT OF : division_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+MOD OF : modulo_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+BIGGR OF : greater_than_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+VISIBLE : print_statement
+SMALLR OF : less_than_operator
+5 : numbr_literal
+AN : argument_separator
+3 : numbr_literal
+\n : new_line
+KTHXBYE : end
+\n : new_line
